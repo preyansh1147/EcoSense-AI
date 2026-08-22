@@ -43,6 +43,102 @@ function buildResponse(input, user, data) {
     return `💡 General tips: switch to LED lighting, optimize HVAC schedules, and install solar panels to reduce grid dependency.`;
   }
 
+  if (q.match(/renewable|solar|green energy|clean energy/)) {
+  return `☀️ ${org} currently has a renewable energy share of **${live?.renewable ?? 0}%**.
+
+Your current energy consumption is **${live?.energy?.toLocaleString() ?? 'N/A'} kWh** today. Increasing renewable adoption can reduce grid dependency and lower long-term carbon emissions.`;
+}
+
+if (q.match(/peak|peak hour|high consumption|load/)) {
+  return `📈 ${org}'s peak consumption typically occurs during **${dna?.peakHour ?? 'daytime'}**.
+
+Your base load is **${dna?.baseLoad ?? 'N/A'}**. Reducing unnecessary loads during peak periods can help lower electricity costs and improve overall energy efficiency.`;
+}
+
+if (q.match(/cost|bill|electricity cost|energy cost|expense/)) {
+  return `💸 ${org}'s estimated energy cost today is **₹${live?.cost?.toLocaleString() ?? 'N/A'}**.
+
+With today's consumption at **${live?.energy?.toLocaleString() ?? 'N/A'} kWh**, optimizing peak-hour usage and increasing renewable generation could help reduce future energy expenses.`;
+}
+
+if (q.match(/baseline|before|previous|historical|comparison/)) {
+  return `📊 Compared with the established baseline, ${org} is currently **${Math.abs(dna?.comparison ?? 0)}% ${(dna?.comparison ?? 0) < 0 ? 'below' : 'above'}** the sector average.
+
+Current consumption: **${live?.energy?.toLocaleString() ?? 'N/A'} kWh**  
+CO₂ emissions: **${live?.co2?.toLocaleString() ?? 'N/A'} kg**  
+Renewable share: **${live?.renewable ?? 0}%**`;
+}
+
+if (q.match(/trend|forecast|future|predict|prediction/)) {
+  return `🔮 Based on current consumption patterns, ${org}'s energy demand can be monitored for future trends.
+
+The key indicators are **daily kWh consumption, peak-hour load, renewable share, and CO₂ emissions**. EcoSense can use these patterns to identify rising consumption and recommend corrective actions.`;
+}
+
+if (q.match(/anomaly|unusual|abnormal|spike|alert/)) {
+  return `🚨 EcoSense monitors ${org}'s energy behavior for unusual consumption patterns.
+
+The most important indicators to investigate are **peak-hour spikes, sudden increases in base load, abnormal daily consumption, and unexpected CO₂ increases**.`;
+}
+
+if (q.match(/saving|savings|save money|financial|roi|return/)) {
+  return `💰 EcoSense can help ${org} identify potential savings by optimizing energy consumption.
+
+The biggest opportunities are typically **reducing peak-hour usage, improving HVAC efficiency, increasing renewable adoption, and eliminating unnecessary base-load consumption**.`;
+}
+
+if (q.match(/hvac|air conditioning|ac|cooling/)) {
+  return `❄️ HVAC systems can be a major contributor to ${org}'s energy consumption.
+
+Consider optimizing **HVAC schedules, temperature setpoints, occupancy-based operation, and maintenance** to reduce unnecessary energy usage without affecting comfort.`;
+}
+
+if (q.match(/dashboard|overview|status|summary|report/)) {
+  return `📋 Here's the current sustainability snapshot for ${org}:
+
+⚡ Energy: **${live?.energy?.toLocaleString() ?? 'N/A'} kWh**  
+🌍 CO₂: **${live?.co2?.toLocaleString() ?? 'N/A'} kg**  
+💸 Energy Cost: **₹${live?.cost?.toLocaleString() ?? 'N/A'}**  
+☀️ Renewable Share: **${live?.renewable ?? 0}%**  
+📊 ESG Score: **${cc?.esgScore ?? 'N/A'}/100**  
+💰 Carbon Credits: **${cc?.credits ?? 0} tCO₂e**`;
+}
+
+if (q.match(/carbon credit value|credit value|worth|market value/)) {
+  return `💰 ${org}'s accumulated **${cc?.credits ?? 0} tCO₂e** in carbon credits currently has an estimated value of **₹${cc?.valueINR?.toLocaleString() ?? 0}**.
+
+These credits can potentially be **sold or retired** through the Carbon Credit Marketplace.`;
+}
+
+if (q.match(/carbon intensity|emission intensity|kg per kwh/)) {
+  const intensity =
+    live?.energy && live?.co2
+      ? (live.co2 / live.energy).toFixed(2)
+      : 'N/A';
+
+  return `🌍 ${org}'s current estimated carbon intensity is **${intensity} kg CO₂/kWh**.
+
+Lower carbon intensity generally indicates cleaner energy usage, especially when renewable generation replaces grid electricity.`;
+}
+
+if (q.match(/action|what should i do|next step|priority|priorities/)) {
+  const tips = dna?.recommendations ?? [];
+
+  return tips.length
+    ? `🎯 Recommended next steps for ${org}:
+
+${tips.slice(0, 3).map((t, i) => `${i + 1}. ${t}`).join('\n')}
+
+Focus first on actions that reduce **peak consumption and CO₂ emissions** while increasing renewable energy adoption.`
+    : `🎯 Recommended next steps for ${org}:
+
+1. Reduce peak-hour energy consumption.
+2. Increase renewable energy adoption.
+3. Optimize HVAC and major electrical loads.
+4. Monitor abnormal consumption patterns.
+5. Track ESG and carbon-credit performance regularly.`;
+}
+
   if (q.match(/solar|renewable|green energy/)) {
     const passive = data?.passive;
     return `☀️ ${org} is generating **${passive?.solarGen ?? 0} kWh** from solar today at **${passive?.solarEff ?? 0}% efficiency**.\n\nHeat recovered: **${passive?.heatRecovered ?? 0} kWh**. Motion-based savings: **${passive?.motionSaved ?? 0} kWh**. Building occupancy today: **${passive?.occupancyPct ?? 0}%**.`;
